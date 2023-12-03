@@ -14,7 +14,7 @@ func main() {
 	config.LoadEnv()
 
 	// Initiating DB
-	config.DBConfig()
+	db := config.DBConfig()
 
 	// Initiating Fiber
 	app := fiber.New()
@@ -23,7 +23,7 @@ func main() {
 		return c.SendString("Tafakor API!")
 	})
 
-	app.Get("/verses", verses.GetVerses)
+	app.Get("/verses", verses.GetVerses(db))
 
 	log.Fatal(app.Listen(":3000"))
 }
