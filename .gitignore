@@ -2,3 +2,6 @@
 *.env
 
 *-data.json
+
+tmp
+tmp/
