@@ -2,26 +2,29 @@ package verses
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
+	"math/rand"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type response (struct {
-	ID          string         `json:"id"`
-	SurahNumber int            `json:"surah_number"`
-	From        int            `json:"from"`
-	To          int            `json:"to"`
-	Count       int            `json:"count"`
-	LastPublish sql.NullString `json:"last_publish"`
-})
+type verse struct {
+	ID          string `json:"id"`
+	SurahNumber int    `json:"surah_number"`
+	From        int    `json:"from"`
+	To          int    `json:"to"`
+	Count       int    `json:"count"`
+}
 
-func GetVerses(db *sql.DB) func(c *fiber.Ctx) error {
-
+func GetVerse(db *sql.DB) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		var verses []response
+		random := c.QueryBool("random")
+		// Stores DB fetched verses
+		var verses []verse
 
+		verseIndex := 0
+
+		// Select query to get verses by priority
 		rows, err := db.Query(`
 			SELECT id, surah_number, start, "end",
 				(SELECT count(id) FROM post WHERE V.id = post.verse) as count,
@@ -29,25 +32,29 @@ func GetVerses(db *sql.DB) func(c *fiber.Ctx) error {
 			FROM verse as V
 			ORDER BY count, last_publish DESC, created_at DESC;
 		`)
+
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer rows.Close()
 
+		// Looping through returned rows
 		for rows.Next() {
-
-			var verse response
-			if err := rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, &verse.LastPublish); err != nil {
-				log.Fatal(err)
-				return c.JSON(verses)
-			}
-			fmt.Println("verse", verse)
+			// Initiate new verse
+			var verse verse
+			// Save new verse
+			rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, nil)
+			// Appending new verse
 			verses = append(verses, verse)
 		}
 
-		fmt.Println(verses)
+		// Closing query
+		defer rows.Close()
 
-		return c.JSON(verses)
+		if random {
+			verseIndex = rand.Intn(len(verses))
+		}
+
+		// Final reaponse
+		return c.JSON(verses[verseIndex])
 	}
-
 }
