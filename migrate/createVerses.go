@@ -3,11 +3,12 @@ package migrate
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"tafakor.app/utils"
 )
 
 type filter struct {
@@ -61,9 +62,6 @@ func FetchPosts() []ReflectPost {
 
 			// Loop until fetch done
 			for !done {
-				// Final Response
-				var res VersesResponse
-
 				// API Endpoint with the pagination
 				url := fmt.Sprintf("https://quranreflect.com/posts.json?client_auth_token=tUqQpl4f87wIGnLRLzG61dGYe03nkBQj&page=%v&tab=trending&lang=ar&featured=true", page)
 
@@ -82,16 +80,14 @@ func FetchPosts() []ReflectPost {
 				println("  Status Code: ", resp.StatusCode)
 
 				if resp.StatusCode == 200 { // If Success
-					content, _ := io.ReadAll(resp.Body) // byte content of the request body
 
-					if valid := json.Valid(content); valid {
-						json.Unmarshal(content, &res) // JSON decoding of the body (follows the structure of VersesResponse struct)
+					// Parsing JSON
+					res := utils.ParseJSONResponses[VersesResponse](resp.Body)
 
-						if len(res.Posts) != 0 {
-							posts = append(posts, res.Posts...) // Saving fetched posts
-							done = true                         // Mark page as done
-							page++
-						}
+					if len(res.Posts) != 0 {
+						posts = append(posts, res.Posts...) // Saving fetched posts
+						done = true                         // Mark page as done
+						page++
 					}
 				} else { // If Request failed
 					// Timeout Increse

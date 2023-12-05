@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -13,6 +14,8 @@ import (
 func main() {
 	// Loading enviroment
 	config.LoadEnv()
+
+	port := os.Getenv("PORT")
 
 	// Initiating DB
 	db := config.DBConfig()
@@ -34,8 +37,9 @@ func main() {
       Developed by: Omar Khaled ":"`)
 	})
 
-	// Verses Routes
+	// Routes
 	routes.VersesRoutes(app.Group("/verses"), db)
+	routes.PublishRoutes(app.Group("/publish"), db)
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":" + port))
 }

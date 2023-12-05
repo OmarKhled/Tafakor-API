@@ -1,4 +1,4 @@
-package versesController
+package controllers
 
 import (
 	"database/sql"
