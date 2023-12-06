@@ -40,6 +40,7 @@ func main() {
 	// Routes
 	routes.VersesRoutes(app.Group("/verses"), db)
 	routes.PublishRoutes(app.Group("/publish"), db)
+	routes.StocksRoutes(app.Group("/stocks"), db)
 
 	log.Fatal(app.Listen(":" + port))
 }

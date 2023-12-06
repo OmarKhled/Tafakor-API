@@ -124,10 +124,6 @@ func FBReel(token string, fileURL string) (bool, string) {
 	return respo.Success, respo.ID
 }
 
-func strings(respo any) {
-	panic("unimplemented")
-}
-
 /*
 @desc Publishes Media to Facaebook (reels | posts)
 @param publishmentType - type of reel or post
