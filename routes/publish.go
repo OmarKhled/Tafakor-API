@@ -64,7 +64,7 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 			log.Fatal(err)
 		}
 
-		return c.JSON(nil)
+		return c.JSON(true)
 	})
 
 	group.Get("/accept", func(c *fiber.Ctx) error {
