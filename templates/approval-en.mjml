@@ -1,0 +1,75 @@
+<mjml>
+  <mj-head>
+    <mj-title></mj-title>
+    <mj-preview>
+      Hello
+    </mj-preview>
+    <mj-style inline="inline">
+      div {
+        color: #004B51 !important;
+      }
+      td  div {
+        font-size: 16px !important;
+        line-height: 27px !important;
+      }
+      .head div {
+        font-size: 20px !important;
+        font-weight: 600;
+      }
+      .xs div {
+        font-size: 16px !important;
+        line-height: 24px !important;
+      }
+      body {
+        background-repeat: no-repeat;
+        padding: 0 20px;
+      }
+      body, html {
+        height: 100%;
+      }
+      	.rounded img { border-radius: 5px; }
+
+        a {
+          color: blue;
+        }
+    </mj-style>
+  </mj-head>
+  <mj-body width="600px" background-color="#fff">
+    <mj-section full-width="full-width">
+      <mj-column padding="30px 0 0 0">
+        
+      </mj-column>
+    </mj-section>
+    <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
+      <mj-column padding="0">
+       <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" width="550px" align="center" css-class="rounded" />
+        <mj-text align="center" css-class="head" padding-top="20px">
+          New post pending approval
+        </mj-text>
+        <mj-text padding-bottom="0">
+          Post: <a href="|POST-LINK|">|POST-LINK|</a>
+        </mj-text>
+        
+    </mj-section>
+
+    <mj-section padding="0 20px 20px 20px" background-color="#DAF9FC" border-radius=" 0 0 8px 8px ">
+      <mj-column width="170px">
+        <mj-button align="center" href="https://tacitapp.com" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="160px">
+          Accept
+        </mj-button>
+      </mj-column>
+
+      <mj-column width="170px">
+        <mj-button align="center" href="https://tacitapp.com" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="160px">
+          Reject
+        </mj-button>
+      </mj-column>
+
+      <mj-column width="220px">
+        <mj-button align="center" href="https://tacitapp.com" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="170px">
+          Reject & Rerender
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
