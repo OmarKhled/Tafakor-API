@@ -1,10 +1,12 @@
 package routes
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"strings"
@@ -43,8 +45,12 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 		r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT-LINK|", acceptLink, "|REJECT-LINK|", rejectLink, "|REJECT-RENDER-LINK|", rerenderLink)
 
-		pwd, _ := os.Getwd()
-		template, err := os.ReadFile(pwd + "/templates/approval.html")
+		resp, err := http.Get("https://tafakor.s3.eu-north-1.amazonaws.com/assets/approval.html")
+
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+
+		template := buf.String()
 
 		if err != nil {
 			log.Fatal(err)
