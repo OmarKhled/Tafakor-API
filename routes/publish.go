@@ -43,7 +43,8 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 		r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT-LINK|", acceptLink, "|REJECT-LINK|", rejectLink, "|REJECT-RENDER-LINK|", rerenderLink)
 
-		template, err := os.ReadFile("templates/approval.html")
+		pwd, _ := os.Getwd()
+		template, err := os.ReadFile(pwd + "/templates/approval.html")
 
 		if err != nil {
 			log.Fatal(err)
