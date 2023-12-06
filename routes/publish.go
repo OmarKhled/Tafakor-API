@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"strings"
@@ -27,8 +28,8 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		SENDER_EMAIL := os.Getenv("SENDER_EMAIL")
 		SENDER_PASS := os.Getenv("SENDER_PASS")
 		EMAIL_HOST := os.Getenv("EMAIL_HOST")
-		PORT := os.Getenv("PORT")
-		SUPERVISOR_EMAIL := os.Getenv("PORT")
+		SMTP_PORT := os.Getenv("SMTP_PORT")
+		SUPERVISOR_EMAIL := os.Getenv("SUPERVISOR_EMAIL")
 		TAFAKOR_ENDPOINT := os.Getenv("TAFAKOR_ENDPOINT")
 
 		var body publishmentBody
@@ -36,17 +37,25 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 		parameters := fmt.Sprintf("?posting_type=%v&file_url=%v&verse_id=%v&stock_id=%v&stock_provider=%v", body.PostingType, body.FileURL, body.VerseID, body.StockID, body.StockProvider)
 
-		acceptLink := fmt.Sprintf("%v/accept", TAFAKOR_ENDPOINT) + parameters
-		rejectLink := fmt.Sprintf("%v/reject", TAFAKOR_ENDPOINT) + parameters
-		rerenderLink := fmt.Sprintf("%v/reject-stock", TAFAKOR_ENDPOINT) + parameters
+		acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters
+		rejectLink := fmt.Sprintf("%v/publish/reject", TAFAKOR_ENDPOINT) + parameters
+		rerenderLink := fmt.Sprintf("%v/publish/reject-stock", TAFAKOR_ENDPOINT) + parameters
 
 		r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT-LINK|", acceptLink, "|REJECT-LINK|", rejectLink, "|REJECT-RENDER-LINK|", rerenderLink)
 
-		template, _ := os.ReadFile("templates/approval.html")
+		template, err := os.ReadFile("templates/approval.html")
+
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		emailBody := r.Replace(string(template))
 
-		utils.SendMail(SENDER_EMAIL, SENDER_PASS, EMAIL_HOST, PORT, SUPERVISOR_EMAIL, "منشور جديد قيد الموافقة", emailBody)
+		err = utils.SendMail(SENDER_EMAIL, SENDER_PASS, EMAIL_HOST, SMTP_PORT, SUPERVISOR_EMAIL, "منشور جديد قيد الموافقة", emailBody)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		return c.JSON(nil)
 	})
