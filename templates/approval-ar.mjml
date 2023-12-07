@@ -1,10 +1,10 @@
 <mjml>
   <mj-head>
-    <mj-title></mj-title>
-    <mj-preview>
-      Hello
-    </mj-preview>
+  <mj-font name="Cairo" href="https://fonts.googleapis.com/css?family=Cairo" />
     <mj-style inline="inline">
+      * {
+        font-family: Cairo;
+      }
       div {
         color: #004B51 !important;
       }
@@ -16,69 +16,70 @@
         font-size: 20px !important;
         font-weight: 600;
       }
-      .xs div {
-        font-size: 16px !important;
-        line-height: 24px !important;
+      .rounded img { border-radius: 5px; }
+      a {
+        color: #004B51;
       }
-      body {
-        background-repeat: no-repeat;
-        padding: 0 20px;
-      }
-      body, html {
-        height: 100%;
-      }
-      	.rounded img { border-radius: 5px; }
 
-        a {
-          color: blue;
-        }
     </mj-style>
   </mj-head>
-  <mj-body width="600px" background-color="#fff">
-    <mj-section full-width="full-width">
-      <mj-column padding="30px 0 0 0">
-        
-      </mj-column>
+  <mj-body width="780px" background-color="#fff">
+    <mj-section full-width="full-width" padding="50px 0 0 0">
     </mj-section>
-    <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
+    <<mj-wrapper padding="30px">
+      <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
       <mj-column padding="0">
        <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" width="550px" align="center" css-class="rounded" />
-        <mj-text align="center" css-class="head" padding-top="20px">
+        <mj-text align="center" css-class="head" padding-top="20px" font-family="Cairo, Ubutnu">
           منشور جديد قيد الموافقة
         </mj-text>
-        <mj-text padding-bottom="0" align="right">
-          <a href="|POST-LINK|">|POST-LINK|</a> رابط المنشور 
+        <mj-text padding-bottom="0" align="center" font-family="Cairo, Ubutnu">
+          <a href="|POST-LINK|">رابط المنشور</a>  
         </mj-text>
         
     </mj-section>
 
     <mj-section padding="0 20px 0 20px" background-color="#DAF9FC" border-radius="0">
-      <mj-column >
-        <mj-button align="center" href="|REJECT-RENDER-LINK|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%">
-          نسخة أخرى
+      <mj-column padding="5px 0" width="200px">
+        <mj-button align="center" href="|REJECT-STOCK|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+          رفض الخلفية
         </mj-button>
       </mj-column>
-
-      <mj-column >
-        <mj-button align="center" href="|REJECT-LINK|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%">
-          رفض 
-        </mj-button>
-      </mj-column>
-
-      <mj-column >
-        
-        <mj-button align="center" href="|ACCEPT-LINK|" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="100%">
+      <mj-column padding="5px 0" width="200px">
+        <mj-button align="center" href="|ACCEPT|" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
           قبول
         </mj-button>
       </mj-column>
+
+      <mj-column padding="5px 0" width="200px">
+        <mj-button align="center" href="|REJECT-VERSE|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+          رفض الاّية 
+        </mj-button>
+      </mj-column>
+
+      <mj-column padding="5px 0" width="200px">
+        <mj-button align="center" href="|REJECT-STOCK-ONCE|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+           رفض الخلفية مرة
+        </mj-button>
+      </mj-column>
+
+      <mj-column padding="5px 0" width="200px">
+        <mj-button align="center" href="|REJECT|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+          رفض  
+        </mj-button>
+      </mj-column>
+
+      
     </mj-section>
 
     <mj-section padding="0 20px 20px 20px" background-color="#DAF9FC" border-radius=" 0 0 8px 8px ">
       <mj-column>
-         <mj-text align="center"  padding-top="20px" font-size="12px">
+         <mj-text align="center"  padding-top="20px" font-size="12px" font-family="Cairo, Ubutnu">
           🤲 نفع الله بكم
         </mj-text>
       </mj-column>
     </mj-section>
+    </mj-wrapper>
+    
   </mj-body>
 </mjml>
