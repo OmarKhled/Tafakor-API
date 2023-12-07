@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 )
 
 type StockFootage struct {
@@ -43,16 +45,28 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	return stocks
 }
 
-func RecordStock(db *sql.DB, id string, postID string, provider string, state string) string {
+func RecordStock(db *sql.DB, id string, postID int, provider string, state string) string {
 	// Inserted Stock ID
 	var stockID string
 
 	// Insertion Query Prepare
 	stockQuery := "INSERT INTO stock_footage(id, post, provider, state) VALUES( $1, $2, $3, $4 ) RETURNING id"
-	stockInsert, _ := db.Prepare(stockQuery)
+	stockInsert, err := db.Prepare(stockQuery)
 
-	// Insertion Query
-	stockInsert.QueryRow(id, postID, provider, state).Scan(stockID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if postID != 0 {
+		// Insertion Query
+		err = stockInsert.QueryRow(id, postID, provider, state).Scan(&stockID)
+	} else {
+		// Insertion Query
+		err = stockInsert.QueryRow(id, nil, provider, state).Scan(&stockID)
+	}
+
+	fmt.Println(err)
+	fmt.Println(stockID)
 	stockInsert.Close()
 
 	return stockID

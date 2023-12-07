@@ -2,6 +2,8 @@ package routes
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	controllers "tafakor.app/controllers"
@@ -69,7 +71,7 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		c.QueryParser(&parameters)
 
 		// Saving Post data to DB
-		postID := controllers.RecordPost(db, parameters.VerseID, true, "rejected", parameters.FileURL, "")
+		postID := controllers.RecordPost(db, parameters.VerseID, false, "rejected", parameters.FileURL, "")
 
 		// Trigger new render workflow
 		controllers.TriggerRender()
@@ -83,8 +85,11 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		var parameters models.PublishmentParamaters
 		c.QueryParser(&parameters)
 
+		content, _ := json.MarshalIndent(parameters, "", "")
+		fmt.Println(string(content))
+
 		// Saving Stock data to DB
-		stockId := controllers.RecordStock(db, parameters.StockID, "", parameters.StockProvider, "rejected")
+		stockId := controllers.RecordStock(db, parameters.StockID, 0, parameters.StockProvider, "rejected")
 
 		// Trigger new render workflow
 		controllers.TriggerRender()
