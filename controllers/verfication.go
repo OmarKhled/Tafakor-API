@@ -31,7 +31,7 @@ func RequestPostApproval(bodyBytes []byte) {
 	parameters := fmt.Sprintf("?posting_type=%v&file_url=%v&verse_id=%v&stock_id=%v&stock_provider=%v", body.PostingType, body.FileURL, body.VerseID, body.StockID, body.StockProvider)
 
 	// URLS Reuired by approval email
-	acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters
+	acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters                        // |ACCEPT|
 	rejectLink := fmt.Sprintf("%v/publish/reject", TAFAKOR_ENDPOINT) + parameters                        // |REJECT|
 	rejectStockLink := fmt.Sprintf("%v/publish/reject/stock", TAFAKOR_ENDPOINT) + parameters             // |REJECT-STOCK|
 	rejectVerseLink := fmt.Sprintf("%v/publish/reject/verse", TAFAKOR_ENDPOINT) + parameters             // |REJECT-VERSE|
@@ -46,7 +46,7 @@ func RequestPostApproval(bodyBytes []byte) {
 	template := buf.String()
 
 	// Email template replacer
-	r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-RENDER-LINK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
+	r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
 
 	// Template Filling
 	emailBody := r.Replace(string(template))
