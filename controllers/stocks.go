@@ -7,10 +7,10 @@ import (
 )
 
 type StockFootage struct {
-	ID           string `json:"id"`
-	PostID       string `json:"post"`
-	ProviderName string `json:"provider"`
-	State        string `json:"state"`
+	ID           string        `json:"id"`
+	PostID       sql.NullInt32 `json:"post"`
+	ProviderName string        `json:"provider"`
+	State        string        `json:"state"`
 }
 
 func GetStocks(db *sql.DB, postID int) []StockFootage {
@@ -34,9 +34,14 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	for rows.Next() {
 		// Initiate new footage
 		var footage StockFootage
+		var created_at string
 
 		// Save new footage
-		rows.Scan(&footage.ID, &footage.PostID, &footage.ProviderName, &footage.State, nil)
+		err := rows.Scan(&footage.ID, &footage.PostID, &footage.ProviderName, &footage.State, &created_at)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// Appending new footage
 		stocks = append(stocks, footage)
