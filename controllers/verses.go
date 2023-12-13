@@ -7,11 +7,12 @@ import (
 )
 
 type verse struct {
-	ID          string `json:"id"`
-	SurahNumber int    `json:"surah_number"`
-	From        int    `json:"from"`
-	To          int    `json:"to"`
-	Count       int    `json:"count"`
+	ID          string         `json:"id"`
+	SurahNumber int            `json:"surah_number"`
+	From        int            `json:"from"`
+	To          int            `json:"to"`
+	Count       int            `json:"count"`
+	Video       sql.NullString `json:"video"`
 }
 
 func GetVerses(db *sql.DB) []verse {
@@ -21,7 +22,8 @@ func GetVerses(db *sql.DB) []verse {
 	rows, err := db.Query(`
 		SELECT id, surah_number, start, "end",
 			(SELECT count(id) FROM post WHERE V.id = post.verse AND post.state != 'pending') as count,
-			(SELECT max(created_at) FROM post WHERE V.id = post.verse) as last_publish
+			(SELECT max(created_at) FROM post WHERE V.id = post.verse) as last_publish, 
+			video
 		FROM verse as V
 		ORDER BY count, last_publish DESC, created_at DESC;
 	`)
@@ -34,8 +36,13 @@ func GetVerses(db *sql.DB) []verse {
 	for rows.Next() {
 		// Initiate new verse
 		var verse verse
+		var last_publish sql.NullString
 		// Save new verse
-		rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, nil)
+		err = rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, &last_publish, &verse.Video)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 		// Appending new verse
 		verses = append(verses, verse)
 	}

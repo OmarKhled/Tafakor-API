@@ -34,7 +34,10 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 			// Saving Post & Stock data to DB
 			postID := controllers.RecordPost(db, parameters.VerseID, true, "accepted", parameters.FileURL, id)
-			controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "accepted")
+
+			if parameters.StockProvider != "MANUAL" {
+				controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "accepted")
+			}
 
 			// Response
 			return c.JSON(postID)
