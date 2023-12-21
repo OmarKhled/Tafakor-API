@@ -14,6 +14,7 @@ type verse struct {
 	Count       int            `json:"count"`
 	Video       sql.NullString `json:"video"`
 	Type        sql.NullString `json:"type"`
+	Reciter     sql.NullInt16  `json:"reciter"`
 }
 
 func GetVerses(db *sql.DB) []verse {
@@ -24,8 +25,7 @@ func GetVerses(db *sql.DB) []verse {
 		SELECT id, surah_number, start, "end",
 			(SELECT count(id) FROM post WHERE V.id = post.verse AND post.state != 'pending') as count,
 			(SELECT max(created_at) FROM post WHERE V.id = post.verse) as last_publish, 
-			video,
-			type
+			video, type, reciter
 		FROM verse as V
 		ORDER BY count, last_publish DESC, created_at DESC;
 	`)
@@ -40,7 +40,7 @@ func GetVerses(db *sql.DB) []verse {
 		var verse verse
 		var last_publish sql.NullString
 		// Save new verse
-		err = rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, &last_publish, &verse.Video, &verse.Type)
+		err = rows.Scan(&verse.ID, &verse.SurahNumber, &verse.From, &verse.To, &verse.Count, &last_publish, &verse.Video, &verse.Type, &verse.Reciter)
 
 		if err != nil {
 			log.Fatal(err)
