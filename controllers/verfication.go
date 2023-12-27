@@ -39,7 +39,7 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 	buf.ReadFrom(resp.Body)
 	template := buf.String()
 
-	// Email template replacer
+	// Email template string replacer
 	r := strings.NewReplacer("|POST-LINK|", postURL, "|REEL-LINK|", reelURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
 
 	// Template Filling
