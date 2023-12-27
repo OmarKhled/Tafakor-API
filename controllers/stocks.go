@@ -9,7 +9,7 @@ import (
 )
 
 type StockFootage struct {
-	ID           string        `json:"id"`
+	ID           int           `json:"id"`
 	StockID      string        `json:"stockid"`
 	PostID       sql.NullInt32 `json:"post"`
 	ProviderName string        `json:"provider"`
@@ -23,12 +23,12 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	var rows *sql.Rows
 	rows, _ = db.Query(`
 		(
-			SELECT id, stockid, postid, provider, state FROM stock_footage
+			SELECT id, stockid, post, provider, state FROM stock_footage
 			WHERE state NOT IN ('rejected-once', 'pending', 'discarded') 
 		)
 				UNION
 		(
-			SELECT id, stockid, postid, provider, state FROM stock_footage
+			SELECT id, stockid, post, provider, state FROM stock_footage
 			WHERE state = 'rejected-once' AND post = $1
 		);
 	`, postID)
