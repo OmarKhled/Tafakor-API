@@ -10,6 +10,7 @@ import (
 
 type StockFootage struct {
 	ID           string        `json:"id"`
+	StockID      string        `json:"stockid"`
 	PostID       sql.NullInt32 `json:"post"`
 	ProviderName string        `json:"provider"`
 	State        string        `json:"state"`
@@ -22,12 +23,12 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	var rows *sql.Rows
 	rows, _ = db.Query(`
 		(
-			SELECT * FROM stock_footage
+			SELECT id, stockid, postid, provider, state FROM stock_footage
 			WHERE state NOT IN ('rejected-once', 'pending', 'discarded') 
 		)
 				UNION
 		(
-			SELECT * FROM stock_footage
+			SELECT id, stockid, postid, provider, state FROM stock_footage
 			WHERE state = 'rejected-once' AND post = $1
 		);
 	`, postID)
@@ -36,10 +37,9 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	for rows.Next() {
 		// Initiate new footage
 		var footage StockFootage
-		var created_at string
 
 		// Save new footage
-		err := rows.Scan(&footage.ID, &footage.PostID, &footage.ProviderName, &footage.State, &created_at)
+		err := rows.Scan(&footage.ID, &footage.StockID, &footage.PostID, &footage.ProviderName, &footage.State)
 
 		if err != nil {
 			log.Fatal(err)
@@ -57,7 +57,7 @@ func RecordStock(db *sql.DB, id string, postID int, provider string, state strin
 	var stockID string
 
 	// Insertion Query Prepare
-	stockQuery := "INSERT INTO stock_footage(id, post, provider, state) VALUES( $1, $2, $3, $4 ) RETURNING id"
+	stockQuery := "INSERT INTO stock_footage(stockid, post, provider, state) VALUES( $1, $2, $3, $4 ) RETURNING id"
 	stockInsert, err := db.Prepare(stockQuery)
 
 	if err != nil {
@@ -83,10 +83,10 @@ func GetStockByPostID(db *sql.DB, postID int) models.Stock {
 	var stock models.Stock
 
 	// Insertion Query Prepare
-	postQuery := "SELECT id, post, provider, state FROM stock_footage WHERE post = $1"
+	postQuery := "SELECT id, stockid, post, provider, state FROM stock_footage WHERE post = $1"
 
 	row := db.QueryRow(postQuery, postID)
-	err := row.Scan(&stock.ID, &stock.PostID, &stock.Provider, &stock.State)
+	err := row.Scan(&stock.ID, &stock.StockID, &stock.PostID, &stock.Provider, &stock.State)
 
 	if err != nil {
 		log.Fatal(err)
