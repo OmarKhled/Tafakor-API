@@ -152,7 +152,7 @@ func IGReel(fileURL string) string {
 	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
 
 	// Endpoint for post publishment
-	reelUploadEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media?video_url=%v&access_token=%v&media_type=REELS", TAFAKOR_ID_INSTAGRAM, fileURL, USER_ACCESS_TOKEN)
+	reelUploadEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media?video_url=%v&access_token=%v&media_type=REELS&thumb_offset=2000", TAFAKOR_ID_INSTAGRAM, fileURL, USER_ACCESS_TOKEN)
 
 	// Uploading Reel
 	nullBody := strings.NewReader("!")
