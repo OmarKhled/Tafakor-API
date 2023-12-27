@@ -32,13 +32,10 @@
     </mj-section>
     <mj-wrapper padding="30px" >
       <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
-        <mj-column padding="0" >
+        <mj-column padding="0">
         <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" width="550px" align="center" css-class="rounded" width="100%" />
           <mj-text align="center" css-class="head" padding-top="20px" font-family="Cairo, Ubutnu">
             منشور جديد قيد الموافقة
-          </mj-text>
-          <mj-text padding="0" padding-top="10px" align="center">
-            تفقد المقطع
           </mj-text>
           <mj-text padding="0" align="center" font-family="Cairo, Ubutnu" css-class="underline">
             <a href="|POST-LINK|">رابط المقطع </a>  

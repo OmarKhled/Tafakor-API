@@ -4,9 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
+	"time"
 
 	"tafakor.app/utils"
 )
@@ -29,6 +33,10 @@ type postPublishmentResponse struct {
 type reelPublishmentResponse struct {
 	Success bool   `json:"success"`
 	ID      string `json:"post_id"`
+}
+
+type igReelPublishmentResponse struct {
+	ID string `json:"id"`
 }
 
 type reelSessionInitRequest struct {
@@ -57,7 +65,6 @@ func FBPost(token string, fileURL string) (bool, string) {
 	// Endpoint for post publishment
 	videoPostEndpoint := fmt.Sprintf("https://graph-video.facebook.com/v18.0/%v/videos", TAFAKOR_ID)
 
-	fmt.Println(videoPostEndpoint)
 	// Publishing post
 	publishmentRes, _ := http.PostForm(videoPostEndpoint, data)
 	publishmentStatus := utils.ParseJSONResponses[postPublishmentResponse](publishmentRes.Body)
@@ -124,16 +131,71 @@ func FBReel(token string, fileURL string) (bool, string) {
 	return respo.Success, respo.ID
 }
 
+func _igReelPublish(uploadId string) string {
+	var TAFAKOR_ID_INSTAGRAM string = os.Getenv("TAFAKOR_ID_INSTAGRAM")
+	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
+
+	reelPublishEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media_publish?creation_id=%v&access_token=%v", TAFAKOR_ID_INSTAGRAM, uploadId, USER_ACCESS_TOKEN)
+	nullBody := strings.NewReader("!")
+	publishmentRes, _ := http.Post(reelPublishEndpoint, "", nullBody)
+	if publishmentRes.StatusCode != 200 {
+		return "NOT_YET"
+	} else {
+		PublishmentStatus := utils.ParseJSONResponses[igReelPublishmentResponse](publishmentRes.Body)
+		return PublishmentStatus.ID
+	}
+
+}
+
+func IGReel(fileURL string) string {
+	var TAFAKOR_ID_INSTAGRAM string = os.Getenv("TAFAKOR_ID_INSTAGRAM")
+	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
+
+	// Endpoint for post publishment
+	reelUploadEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media?video_url=%v&access_token=%v&media_type=REELS", TAFAKOR_ID_INSTAGRAM, fileURL, USER_ACCESS_TOKEN)
+
+	// Uploading Reel
+	nullBody := strings.NewReader("!")
+	uploadingRes, err := http.Post(reelUploadEndpoint, "", nullBody)
+
+	if err == nil {
+		uploadingStatus := utils.ParseJSONResponses[igReelPublishmentResponse](uploadingRes.Body)
+		fmt.Println(uploadingStatus.ID + " instagaram")
+
+		var publishmentId string
+
+		publishmentId = _igReelPublish(uploadingStatus.ID)
+
+		for publishmentId == "NOT_YET" {
+			fmt.Println(publishmentId)
+			time.Sleep(10 * time.Second)
+			publishmentId = _igReelPublish(uploadingStatus.ID)
+		}
+
+		return publishmentId
+	} else {
+		log.Fatal(err)
+	}
+
+	return "ERROR"
+}
+
 /*
-@desc Publishes Media to Facaebook (reels | posts)
-@param publishmentType - type of reel or post
-@param fileURL - Uploaded file url
+@desc Publishes Media to Social Media (reels | posts)
+@param postURL - Uploaded post url
+@param reelURL - Uploaded reel url
 */
-func PublishToFB(publishmentType string, fileURL string) (bool, string) {
+func SocialPublishment(postURL string, reelURL string) (bool, string) {
 	// Enviroment Variables
 	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
 	var TAFAKOR_ID string = os.Getenv("TAFAKOR_ID")
+	// var TAFAKOR_ID_INSTAGRAM string = os.Getenv("TAFAKOR_ID_INSTAGRAM")
 	var USER_ID string = os.Getenv("USER_ID")
+
+	var postingTypes = [2]string{"reel", "post"}
+	randomIndex := rand.Intn(2)
+
+	facebookPublishmentType := postingTypes[randomIndex]
 
 	// Accounts Request endpoint
 	tokensEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/accounts?access_token=%v", USER_ID, USER_ACCESS_TOKEN)
@@ -155,18 +217,24 @@ func PublishToFB(publishmentType string, fileURL string) (bool, string) {
 	var status bool = false
 	var id string
 
-	switch publishmentType {
+	fmt.Println("facebook")
+	// Facebook Publish
+	switch facebookPublishmentType {
 	case "reel":
 		fmt.Println("Reel")
-		reelStatus, reelID := FBReel(token, fileURL)
+		reelStatus, reelID := FBReel(token, reelURL)
 		status = reelStatus
 		id = reelID
 	case "post":
 		fmt.Println("Post")
-		postStatus, postID := FBPost(token, fileURL)
+		postStatus, postID := FBPost(token, postURL)
 		status = postStatus
 		id = postID
 	}
+
+	fmt.Println("Intsgaram")
+	// Instagram Publish
+	IGReel(reelURL)
 
 	return status, id
 }

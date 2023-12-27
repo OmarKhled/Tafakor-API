@@ -12,10 +12,18 @@ import (
 
 func PublishRoutes(group fiber.Router, db *sql.DB) {
 	group.Post("/", func(c *fiber.Ctx) error {
-		// Approval Reuest Email
-		controllers.RequestPostApproval(c.Body())
+		var body models.PublishmentParamaters
+		json.Unmarshal(c.Body(), &body)
 
-		return c.JSON(true)
+		fmt.Println(body.VerseID)
+
+		// Record Posting as Pending
+		postId := controllers.RecordPost(db, body.VerseID, false, "pending", body.PostURL, 0, body.ReelURL)
+		controllers.RecordStock(db, body.StockID, postId, body.StockProvider, "pending")
+		// Approval Reuest Email
+		controllers.RequestPostApproval(postId, body.PostURL, body.ReelURL)
+
+		return c.JSON(postId)
 	})
 
 	// ===================================
@@ -24,23 +32,26 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 	group.Get("/accept", func(c *fiber.Ctx) error {
 		// Extracting request query
-		var parameters models.PublishmentParamaters
+		var parameters models.EmailSubmissionParameters
 		c.QueryParser(&parameters)
 
+		var post models.Post = controllers.GetPost(db, parameters.PostID)
+		fmt.Println("Post retrival done")
+		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
+		fmt.Println("Stock retrival done")
+
 		// Publish post to FB
-		status, id := controllers.PublishToFB(parameters.PostingType, parameters.FileURL)
+		status, _ := controllers.SocialPublishment(post.PostURL, post.ReelURL)
 
 		if status == true { // Published Successfully
 
-			// Saving Post & Stock data to DB
-			postID := controllers.RecordPost(db, parameters.VerseID, true, "accepted", parameters.FileURL, id)
+			// Accepting Post saved in DB
+			controllers.ChangePostStatus(db, post.ID, "accepted")
 
-			if parameters.StockProvider != "MANUAL" {
-				controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "accepted")
-			}
+			controllers.ChangeStockStatus(db, stock.ID, "accepted")
 
 			// Response
-			return c.JSON(postID)
+			return c.JSON(parameters.PostID)
 		} else {
 			return c.JSON(nil)
 		}
@@ -54,67 +65,75 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 
 	reject.Get("/", func(c *fiber.Ctx) error {
 		// Extracting request query
-		var parameters models.PublishmentParamaters
+		var parameters models.EmailSubmissionParameters
 		c.QueryParser(&parameters)
 
-		// Saving Post & Stock data to DB
-		postID := controllers.RecordPost(db, parameters.VerseID, true, "rejected", parameters.FileURL, "")
-		controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "rejected")
+		// Retreiving pending stock
+		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
+
+		// Rejecting Post & Stock
+		controllers.ChangePostStatus(db, parameters.PostID, "rejected")
+		controllers.ChangeStockStatus(db, stock.ID, "rejected")
 
 		// Trigger new render workflow
 		controllers.TriggerRender()
 
 		// Response
-		return c.JSON(postID)
+		return c.JSON(parameters.PostID)
 	})
 
 	reject.Get("/verse", func(c *fiber.Ctx) error {
 		// Extracting request query
-		var parameters models.PublishmentParamaters
+		var parameters models.EmailSubmissionParameters
 		c.QueryParser(&parameters)
 
+		// Retreiving pending stock
+		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
+
 		// Saving Post data to DB
-		postID := controllers.RecordPost(db, parameters.VerseID, false, "rejected", parameters.FileURL, "")
+		controllers.ChangePostStatus(db, parameters.PostID, "rejected")
+		controllers.ChangeStockStatus(db, stock.ID, "discarded")
 
 		// Trigger new render workflow
 		controllers.TriggerRender()
 
 		// Response
-		return c.JSON(postID)
+		return c.JSON(parameters.PostID)
 	})
 
 	reject.Get("/stock", func(c *fiber.Ctx) error {
 		// Extracting request query
-		var parameters models.PublishmentParamaters
+		var parameters models.EmailSubmissionParameters
 		c.QueryParser(&parameters)
 
-		content, _ := json.MarshalIndent(parameters, "", "")
-		fmt.Println(string(content))
+		// Retreiving pending stock
+		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
 
 		// Saving Stock data to DB
-		stockId := controllers.RecordStock(db, parameters.StockID, 0, parameters.StockProvider, "rejected")
+		controllers.ChangePostStatus(db, parameters.PostID, "rejected")
+		controllers.ChangeStockStatus(db, stock.ID, "rejected")
 
 		// Trigger new render workflow
 		controllers.TriggerRender()
 
 		// Response
-		return c.JSON(stockId)
+		return c.JSON(stock.ID)
 	})
 
-	reject.Get("/stock-post", func(c *fiber.Ctx) error {
-		// Extracting request query
-		var parameters models.PublishmentParamaters
-		c.QueryParser(&parameters)
+	// reject.Get("/stock-post", func(c *fiber.Ctx) error {
+	// 	// Extracting request query
+	// 	var parameters models.PublishmentParamaters
+	// 	c.QueryParser(&parameters)
 
-		// Saving Post & Stock data to DB
-		postID := controllers.RecordPost(db, parameters.VerseID, false, "pending", parameters.FileURL, "")
-		stockId := controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "rejected-once")
+	// 	// Saving Post & Stock data to DB
+	// 	postID := controllers.RecordPost(db, parameters.VerseID, false, "pending", parameters.FileURL, "")
+	// 	stockId := controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "rejected-once")
 
-		// Trigger new render workflow
-		controllers.TriggerRender()
+	// 	// Trigger new render workflow
+	// 	controllers.TriggerRender()
 
-		// Response
-		return c.JSON(stockId)
-	})
+	// 	// Response
+	// 	return c.JSON(stockId)
+	// })
 
 }

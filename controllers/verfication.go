@@ -2,19 +2,17 @@ package controllers
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"tafakor.app/models"
 	"tafakor.app/utils"
 )
 
 // Requests approval on publishments from supervisor
-func RequestPostApproval(bodyBytes []byte) {
+func RequestPostApproval(postId int, postURL string, reelURL string) {
 	// Enviroment Variables
 	SENDER_EMAIL := os.Getenv("SENDER_EMAIL")
 	SENDER_PASS := os.Getenv("SENDER_PASS")
@@ -23,12 +21,8 @@ func RequestPostApproval(bodyBytes []byte) {
 	SUPERVISOR_EMAIL := os.Getenv("SUPERVISOR_EMAIL")
 	TAFAKOR_ENDPOINT := os.Getenv("TAFAKOR_ENDPOINT")
 
-	// Extracting Body content
-	var body models.PublishmentParamaters
-	json.Unmarshal(bodyBytes, &body)
-
 	// Converting Body to query
-	parameters := fmt.Sprintf("?posting_type=%v&file_url=%v&verse_id=%v&stock_id=%v&stock_provider=%v", body.PostingType, body.FileURL, body.VerseID, body.StockID, body.StockProvider)
+	parameters := fmt.Sprintf("?post_id=%v", postId)
 
 	// URLS Reuired by approval email
 	acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters                        // |ACCEPT|
@@ -46,7 +40,7 @@ func RequestPostApproval(bodyBytes []byte) {
 	template := buf.String()
 
 	// Email template replacer
-	r := strings.NewReplacer("|POST-LINK|", body.FileURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
+	r := strings.NewReplacer("|POST-LINK|", postURL, "|REEL-LINK|", reelURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
 
 	// Template Filling
 	emailBody := r.Replace(string(template))

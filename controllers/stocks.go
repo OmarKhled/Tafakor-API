@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
+	"tafakor.app/models"
 )
 
 type StockFootage struct {
@@ -21,7 +23,7 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 	rows, _ = db.Query(`
 		(
 			SELECT * FROM stock_footage
-			WHERE state != 'rejected-once'
+			WHERE state NOT IN ('rejected-once', 'pending', 'discarded') 
 		)
 				UNION
 		(
@@ -75,4 +77,33 @@ func RecordStock(db *sql.DB, id string, postID int, provider string, state strin
 	stockInsert.Close()
 
 	return stockID
+}
+
+func GetStockByPostID(db *sql.DB, postID int) models.Stock {
+	var stock models.Stock
+
+	// Insertion Query Prepare
+	postQuery := "SELECT id, post, provider, state FROM stock_footage WHERE post = $1"
+
+	row := db.QueryRow(postQuery, postID)
+	err := row.Scan(&stock.ID, &stock.PostID, &stock.Provider, &stock.State)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return stock
+}
+
+func ChangeStockStatus(db *sql.DB, stockID string, stockStatus string) bool {
+	// Insertion Query Prepare
+	postQuery := "UPDATE stock_footage SET state = $1 WHERE id = $2"
+
+	_, err := db.Exec(postQuery, stockStatus, stockID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return true
 }
