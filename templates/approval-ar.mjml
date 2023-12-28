@@ -26,6 +26,9 @@
       }
 
     </mj-style>
+    <mj-preview>
+      منشور جديد قيد الموافقة باذن الرحمن 🤲
+    </mj-preview>
   </mj-head>
   <mj-body width="780px" background-color="#fff">
     <mj-section full-width="full-width" padding="50px 0 0 0">
@@ -33,7 +36,7 @@
     <mj-wrapper padding="30px" >
       <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
         <mj-column padding="0">
-        <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" width="550px" align="center" css-class="rounded" width="100%" />
+        <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" align="center" css-class="rounded" />
           <mj-text align="center" css-class="head" padding-top="20px" font-family="Cairo, Ubutnu">
             منشور جديد قيد الموافقة
           </mj-text>
@@ -44,9 +47,19 @@
       </mj-section>
 
       <mj-section padding="0 20px 0 20px" background-color="#DAF9FC" border-radius="0">
-      <mj-column padding="5px 0" width="200px">
+        <mj-column padding="5px 0" width="200px">
           <mj-button align="center" href="|ACCEPT|" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
             قبول
+          </mj-button>
+        </mj-column>
+        <mj-column padding="5px 0" width="200px">
+          <mj-button align="center" href="|ACCEPT-FACEBOOK|" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+             قبول فيسبوك
+          </mj-button>
+        </mj-column>
+        <mj-column padding="5px 0" width="200px">
+          <mj-button align="center" href="|ACCEPT-INSTAGRAM|" font-size="14px "background-color="#0095A0" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
+             قبول انستغرام
           </mj-button>
         </mj-column>
         <mj-column padding="5px 0" width="200px">
@@ -59,11 +72,11 @@
             رفض الاّية 
           </mj-button>
         </mj-column>
-        <!--<mj-column padding="5px 0" width="200px">
+        <mj-column padding="5px 0" width="200px">
           <mj-button align="center" href="|REJECT-STOCK-ONCE|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
-            رفض الخلفية مرة
+            رفض الخلفية مرة واحدة
           </mj-button>
-        </mj-column> -->
+        </mj-column> 
         <mj-column padding="5px 0" width="200px">
           <mj-button align="center" href="|REJECT|" font-size="14px "background-color="#E11F2B" inner-padding="12px 23px" color="#fff" width="100%" font-family="Cairo, Ubutnu" padding="0 8px">
             رفض  
