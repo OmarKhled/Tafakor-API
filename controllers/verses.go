@@ -23,8 +23,8 @@ func GetVerses(db *sql.DB) []verse {
 	// Select query to get verses by priority
 	rows, err := db.Query(`
 		SELECT id, surah_number, start, "end",
-			(SELECT count(id) FROM post WHERE V.id = post.verse AND post.state != 'pending') as count,
-			(SELECT max(created_at) FROM post WHERE V.id = post.verse) as last_publish, 
+			(SELECT count(id) FROM post WHERE V.id = post.verse AND post.state NOT IN ('pending', 'discarded')) as count,
+			(SELECT max(created_at) FROM post WHERE V.id = post.verse AND post.state NOT IN ('discarded')) as last_publish, 
 			video, type, reciter
 		FROM verse as V
 		ORDER BY count, last_publish DESC, created_at DESC;

@@ -41,7 +41,7 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		fmt.Println("Stock retrival done")
 
 		// Publish post to FB
-		status, _ := controllers.SocialPublishment(post.PostURL, post.ReelURL)
+		status, _ := controllers.SocialPublishment(post.PostURL, post.ReelURL, parameters.Platform)
 
 		if status == true { // Published Successfully
 
@@ -110,7 +110,7 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
 
 		// Saving Stock data to DB
-		controllers.ChangePostStatus(db, parameters.PostID, "rejected")
+		controllers.ChangePostStatus(db, parameters.PostID, "discarded")
 		controllers.ChangeStockStatus(db, stock.ID, "rejected")
 
 		// Trigger new render workflow
@@ -120,20 +120,23 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		return c.JSON(stock.ID)
 	})
 
-	// reject.Get("/stock-post", func(c *fiber.Ctx) error {
-	// 	// Extracting request query
-	// 	var parameters models.PublishmentParamaters
-	// 	c.QueryParser(&parameters)
+	reject.Get("/stock-post", func(c *fiber.Ctx) error {
+		// Extracting request query
+		var parameters models.EmailSubmissionParameters
+		c.QueryParser(&parameters)
 
-	// 	// Saving Post & Stock data to DB
-	// 	postID := controllers.RecordPost(db, parameters.VerseID, false, "pending", parameters.FileURL, "")
-	// 	stockId := controllers.RecordStock(db, parameters.StockID, postID, parameters.StockProvider, "rejected-once")
+		// Retreiving pending stock
+		var stock models.Stock = controllers.GetStockByPostID(db, parameters.PostID)
 
-	// 	// Trigger new render workflow
-	// 	controllers.TriggerRender()
+		// Saving Stock data to DB
+		controllers.ChangePostStatus(db, parameters.PostID, "discarded")
+		controllers.ChangeStockStatus(db, stock.ID, "rejected-once")
 
-	// 	// Response
-	// 	return c.JSON(stockId)
-	// })
+		// Trigger new render workflow
+		controllers.TriggerRender()
+
+		// Response
+		return c.JSON(stock.ID)
+	})
 
 }

@@ -9,5 +9,6 @@ type PublishmentParamaters struct {
 }
 
 type EmailSubmissionParameters struct {
-	PostID int `query:"post_id" json:"post_id"`
+	PostID   int    `query:"post_id" json:"post_id"`
+	Platform string `query:"platform" json:"platform"`
 }

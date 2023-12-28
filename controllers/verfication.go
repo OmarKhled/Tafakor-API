@@ -22,14 +22,16 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 	TAFAKOR_ENDPOINT := os.Getenv("TAFAKOR_ENDPOINT")
 
 	// Converting Body to query
-	parameters := fmt.Sprintf("?post_id=%v", postId)
+	parameters := fmt.Sprintf("?post_id=%v&platform=", postId)
 
 	// URLS Reuired by approval email
-	acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters                        // |ACCEPT|
-	rejectLink := fmt.Sprintf("%v/publish/reject", TAFAKOR_ENDPOINT) + parameters                        // |REJECT|
-	rejectStockLink := fmt.Sprintf("%v/publish/reject/stock", TAFAKOR_ENDPOINT) + parameters             // |REJECT-STOCK|
-	rejectVerseLink := fmt.Sprintf("%v/publish/reject/verse", TAFAKOR_ENDPOINT) + parameters             // |REJECT-VERSE|
-	rejectStockForPostLink := fmt.Sprintf("%v/publish/reject/stock-post", TAFAKOR_ENDPOINT) + parameters // |REJECT-STOCK-ONCE|
+	acceptLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters + "all"                        // |ACCEPT|
+	acceptFacebookLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters + "facebook"           // |ACCEPT-FACEBOOK|
+	acceptInstagramLink := fmt.Sprintf("%v/publish/accept", TAFAKOR_ENDPOINT) + parameters + "instagram"         // |ACCEPT-INSTAGRAM|
+	rejectLink := fmt.Sprintf("%v/publish/reject", TAFAKOR_ENDPOINT) + parameters + "all"                        // |REJECT|
+	rejectStockLink := fmt.Sprintf("%v/publish/reject/stock", TAFAKOR_ENDPOINT) + parameters + "all"             // |REJECT-STOCK|
+	rejectVerseLink := fmt.Sprintf("%v/publish/reject/verse", TAFAKOR_ENDPOINT) + parameters + "all"             // |REJECT-VERSE|
+	rejectStockForPostLink := fmt.Sprintf("%v/publish/reject/stock-post", TAFAKOR_ENDPOINT) + parameters + "all" // |REJECT-STOCK-ONCE|
 
 	// Email template
 	resp, _ := http.Get("https://tafakor.s3.eu-north-1.amazonaws.com/assets/approval.html")
@@ -40,7 +42,7 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 	template := buf.String()
 
 	// Email template string replacer
-	r := strings.NewReplacer("|POST-LINK|", postURL, "|REEL-LINK|", reelURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink)
+	r := strings.NewReplacer("|POST-LINK|", postURL, "|REEL-LINK|", reelURL, "|ACCEPT|", acceptLink, "|REJECT|", rejectLink, "|REJECT-STOCK|", rejectStockLink, "|REJECT-VERSE|", rejectVerseLink, "|REJECT-STOCK-ONCE|", rejectStockForPostLink, "|ACCEPT-FACEBOOK|", acceptFacebookLink, "|ACCEPT-INSTAGRAM|", acceptInstagramLink)
 
 	// Template Filling
 	emailBody := r.Replace(string(template))

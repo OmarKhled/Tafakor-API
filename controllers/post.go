@@ -53,3 +53,16 @@ func ChangePostStatus(db *sql.DB, postID int, postStatus string) bool {
 
 	return true
 }
+
+func DeletePost(db *sql.DB, postID int) bool {
+	// Insertion Query Prepare
+	postQuery := "DELETE FROM post WHERE id = $1"
+
+	_, err := db.Exec(postQuery, postID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return true
+}

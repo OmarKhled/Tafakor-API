@@ -185,11 +185,10 @@ func IGReel(fileURL string) string {
 @param postURL - Uploaded post url
 @param reelURL - Uploaded reel url
 */
-func SocialPublishment(postURL string, reelURL string) (bool, string) {
+func SocialPublishment(postURL string, reelURL string, platform string) (bool, string) {
 	// Enviroment Variables
 	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
 	var TAFAKOR_ID string = os.Getenv("TAFAKOR_ID")
-	// var TAFAKOR_ID_INSTAGRAM string = os.Getenv("TAFAKOR_ID_INSTAGRAM")
 	var USER_ID string = os.Getenv("USER_ID")
 
 	var postingTypes = [2]string{"reel", "post"}
@@ -212,29 +211,31 @@ func SocialPublishment(postURL string, reelURL string) (bool, string) {
 		}
 	}
 
-	fmt.Println("Token:", token)
-
 	var status bool = false
 	var id string
 
-	fmt.Println("facebook")
 	// Facebook Publish
-	switch facebookPublishmentType {
-	case "reel":
-		fmt.Println("Reel")
-		reelStatus, reelID := FBReel(token, reelURL)
-		status = reelStatus
-		id = reelID
-	case "post":
-		fmt.Println("Post")
-		postStatus, postID := FBPost(token, postURL)
-		status = postStatus
-		id = postID
+	if platform == "all" || platform == "facebook" {
+		fmt.Println("facebook")
+		switch facebookPublishmentType {
+		case "reel":
+			fmt.Println("Reel")
+			reelStatus, reelID := FBReel(token, reelURL)
+			status = reelStatus
+			id = reelID
+		case "post":
+			fmt.Println("Post")
+			postStatus, postID := FBPost(token, postURL)
+			status = postStatus
+			id = postID
+		}
 	}
 
-	fmt.Println("Intsgaram")
-	// Instagram Publish
-	IGReel(reelURL)
+	if platform == "all" || platform == "instagram" {
+		fmt.Println("Intsgaram")
+		// Instagram Publish
+		IGReel(reelURL)
+	}
 
 	return status, id
 }

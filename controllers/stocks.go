@@ -107,3 +107,16 @@ func ChangeStockStatus(db *sql.DB, stockID string, stockStatus string) bool {
 
 	return true
 }
+
+func DeleteStock(db *sql.DB, stockID string) bool {
+	// Insertion Query Prepare
+	postQuery := "DELETE FROM stock_footage WHERE id = $2"
+
+	_, err := db.Exec(postQuery, stockID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return true
+}
