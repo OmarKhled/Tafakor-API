@@ -43,6 +43,8 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		// Publish post to FB
 		status, _ := controllers.SocialPublishment(post.PostURL, post.ReelURL, parameters.Platform)
 
+		// status := true
+
 		if status == true { // Published Successfully
 
 			// Accepting Post saved in DB

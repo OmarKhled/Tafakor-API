@@ -234,7 +234,11 @@ func SocialPublishment(postURL string, reelURL string, platform string) (bool, s
 	if platform == "all" || platform == "instagram" {
 		fmt.Println("Intsgaram")
 		// Instagram Publish
-		IGReel(reelURL)
+		igStatus := IGReel(reelURL)
+
+		if igStatus != "ERROR" {
+			status = true
+		}
 	}
 
 	return status, id
