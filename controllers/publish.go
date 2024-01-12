@@ -48,6 +48,8 @@ type reelSessionInitResponse struct {
 	VideoID string `json:"video_id"`
 }
 
+var HASH_TAGS = "#quran #tafakor #remembrance #قران #القران"
+
 /*
 @desc Publishes Facaebook Posts
 @param token - Temp FB access token
@@ -61,6 +63,7 @@ func FBPost(token string, fileURL string) (bool, string) {
 	data := url.Values{}
 	data.Add("access_token", token)
 	data.Add("file_url", fileURL)
+	data.Add("message", HASH_TAGS)
 
 	// Endpoint for post publishment
 	videoPostEndpoint := fmt.Sprintf("https://graph-video.facebook.com/v18.0/%v/videos", TAFAKOR_ID)
@@ -152,7 +155,7 @@ func IGReel(fileURL string) string {
 	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
 
 	// Endpoint for post publishment
-	reelUploadEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media?video_url=%v&access_token=%v&media_type=REELS&thumb_offset=2000", TAFAKOR_ID_INSTAGRAM, fileURL, USER_ACCESS_TOKEN)
+	reelUploadEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media?video_url=%v&access_token=%v&media_type=REELS&thumb_offset=2000&caption=%v", TAFAKOR_ID_INSTAGRAM, fileURL, USER_ACCESS_TOKEN, HASH_TAGS)
 
 	// Uploading Reel
 	nullBody := strings.NewReader("!")
