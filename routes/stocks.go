@@ -10,9 +10,9 @@ import (
 
 func StocksRoutes(group fiber.Router, db *sql.DB) {
 	group.Get("/", func(c *fiber.Ctx) error {
-		postID := c.QueryInt("postID")
-		fmt.Println("ID", postID)
-		stocks := controllers.GetStocks(db, postID)
+		verseId := c.QueryInt("verseId")
+		fmt.Println("ID", verseId)
+		stocks := controllers.GetStocks(db, verseId)
 
 		return c.JSON(stocks)
 	})
