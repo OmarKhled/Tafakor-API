@@ -9,29 +9,28 @@ import (
 )
 
 type StockFootage struct {
-	ID           int           `json:"id"`
-	StockID      string        `json:"stockid"`
-	PostID       sql.NullInt32 `json:"post"`
-	ProviderName string        `json:"provider"`
-	State        string        `json:"state"`
+	ID           int    `json:"id"`
+	StockID      string `json:"stockid"`
+	ProviderName string `json:"provider"`
+	State        string `json:"state"`
 }
 
-func GetStocks(db *sql.DB, postID int) []StockFootage {
+func GetStocks(db *sql.DB, verseId int) []StockFootage {
 	var stocks []StockFootage
 
 	// Selection Query
 	var rows *sql.Rows
 	rows, _ = db.Query(`
 		(
-			SELECT id, stockid, post, provider, state FROM stock_footage
+			SELECT id, stockid, provider, state FROM stock_footage
 			WHERE state NOT IN ('rejected-once', 'pending', 'discarded') 
 		)
 				UNION
 		(
-			SELECT id, stockid, post, provider, state FROM stock_footage
-			WHERE state = 'rejected-once' AND post != $1
+			SELECT id, stockid, provider, state FROM stock_footage
+			WHERE state = 'rejected-once' AND post NOT IN (SELECT id FROM post WHERE verse = $1)
 		);
-	`, postID)
+	`, verseId)
 
 	// Looping through returned rows
 	for rows.Next() {
@@ -39,7 +38,7 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 		var footage StockFootage
 
 		// Save new footage
-		err := rows.Scan(&footage.ID, &footage.StockID, &footage.PostID, &footage.ProviderName, &footage.State)
+		err := rows.Scan(&footage.ID, &footage.StockID, &footage.ProviderName, &footage.State)
 
 		if err != nil {
 			log.Fatal(err)
