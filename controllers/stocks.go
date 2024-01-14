@@ -29,7 +29,7 @@ func GetStocks(db *sql.DB, postID int) []StockFootage {
 				UNION
 		(
 			SELECT id, stockid, post, provider, state FROM stock_footage
-			WHERE state = 'rejected-once' AND post = $1
+			WHERE state = 'rejected-once' AND post != $1
 		);
 	`, postID)
 
