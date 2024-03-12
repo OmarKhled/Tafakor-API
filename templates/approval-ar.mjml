@@ -36,7 +36,7 @@
     <mj-wrapper padding="30px" >
       <mj-section padding="20px" background-color="#DAF9FC" border-radius="8px 8px 0 0">
         <mj-column padding="0">
-        <mj-image padding="0" src="https://tafakor.s3.eu-north-1.amazonaws.com/assets/banner.png" align="center" css-class="rounded" />
+        <mj-image padding="0" src="https://tafkor.s3.eu-central-1.amazonaws.com/assets/banner.png" align="center" css-class="rounded" />
           <mj-text align="center" css-class="head" padding-top="20px" font-family="Cairo, Ubutnu">
             منشور جديد قيد الموافقة
           </mj-text>
