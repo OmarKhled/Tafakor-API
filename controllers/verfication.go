@@ -34,7 +34,9 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 	rejectStockForPostLink := fmt.Sprintf("%v/publish/reject/stock-post", TAFAKOR_ENDPOINT) + parameters + "all" // |REJECT-STOCK-ONCE|
 
 	// Email template
-	resp, _ := http.Get("https://tafakor.s3.eu-north-1.amazonaws.com/assets/approval.html")
+	resp, _ := http.Get("https://tafkor.s3.eu-central-1.amazonaws.com/assets/approval.html")
+
+	fmt.Println(resp)
 
 	// Template parsing
 	buf := new(bytes.Buffer)
