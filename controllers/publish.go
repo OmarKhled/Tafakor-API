@@ -48,7 +48,8 @@ type reelSessionInitResponse struct {
 	VideoID string `json:"video_id"`
 }
 
-var HASH_TAGS = "أَلا بِذِكرِ اللَّهِ تَطمَئِنُّ القُلوبُ 🤍🤍 \n #القران_الكريم #القرآن #قرآن #quran #تفكر #remembrance"
+// var HASH_TAGS = "أَلا بِذِكرِ اللَّهِ تَطمَئِنُّ القُلوبُ 🤍🤍 \n #القران_الكريم #القرآن #قرآن #quran #تفكر #remembrance"
+var HASH_TAGS = " "
 
 /*
 @desc Publishes Facaebook Posts
