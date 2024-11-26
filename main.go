@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	_ "github.com/lib/pq"
 	"tafakor.app/config"
-	// "tafakor.app/routes"
+	"tafakor.app/routes"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	// Initiating DB
-	// db := config.DBConfig()
+	db := config.DBConfig()
 
 	// Initiating Fiber
 	app := fiber.New()
@@ -37,15 +37,10 @@ func main() {
       Developed by: Omar Khaled ":"`)
 	})
 
-
-	app.Get("/secrets", func(c *fiber.Ctx) error {
-		return c.JSON(os.Environ())
-	})
-
 	// Routes
-	// routes.VersesRoutes(app.Group("/verses"), db)
-	// routes.PublishRoutes(app.Group("/publish"), db)
-	// routes.StocksRoutes(app.Group("/stocks"), db)
+	routes.VersesRoutes(app.Group("/verses"), db)
+	routes.PublishRoutes(app.Group("/publish"), db)
+	routes.StocksRoutes(app.Group("/stocks"), db)
 
 	log.Fatal(app.Listen(":" + port))
 }
