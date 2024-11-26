@@ -7,14 +7,12 @@ import (
 
 func Seed(db *sql.DB) {
 	// Fetch posts from Quran Reflect's API
-	var posts []ReflectPost = FetchPosts()
+	var verses []Verse = FetchPosts()
 
-	// Loop through posts
-	for index, post := range posts {
-		if len(post.Filters) > 0 {
-			// For each segment in the post
-			for _, meta := range post.Filters {
-				// DB Insert Query
+	if len(verses) > 0 {
+		// Loop through posts
+		for index, verse := range verses {
+			if verse.Length > 7 && verse.SurahNumber >= 2 && verse.SurahNumber <= 78 {
 				query := "INSERT INTO verse(id, surah_number, start, \"end\") VALUES( $1, $2, $3, $4 )"
 
 				insert, err := db.Prepare(query)
@@ -23,11 +21,9 @@ func Seed(db *sql.DB) {
 					fmt.Println(err)
 				}
 
-				// Final ID is combination of the segment ID and the post ID
-				id := fmt.Sprintf("%v:%v", post.ID, meta.ID)
-				// Insert into DB
-				resp, err := insert.Exec(id, meta.SurahNumber, meta.From, meta.To)
-				fmt.Println("Index:", index, " Inserted", id)
+				resp, err := insert.Exec(verse.ID, verse.SurahNumber, verse.From, verse.To)
+
+				fmt.Println("Index:", index, " Inserted", verse.ID)
 
 				// End instruction
 				insert.Close()
@@ -35,8 +31,10 @@ func Seed(db *sql.DB) {
 				if err != nil {
 					fmt.Println(err, resp)
 				}
-
+			} else {
+				fmt.Println("Skipped Index:", index, "Length:", verse.Length, "To:", verse.To, "From:", verse.From)
 			}
 		}
 	}
+
 }

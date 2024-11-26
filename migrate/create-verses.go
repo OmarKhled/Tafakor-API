@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"tafakor.app/utils"
@@ -19,13 +20,27 @@ type filter struct {
 	IndicatorText string `json:"indicator_text"`
 }
 
+type CitationText struct {
+	ID   int    `json:"citation_id"`
+	Text string `json:"text"`
+}
+
 type ReflectPost struct {
-	ID      int      `json:"id"`
-	Filters []filter `json:"filters"`
+	ID            int                    `json:"id"`
+	Filters       []filter               `json:"filters"`
+	CitationTexts map[int][]CitationText `json:"citation_texts"`
 }
 
 type VersesResponse struct {
 	Posts []ReflectPost `json:"posts"`
+}
+
+type Verse struct {
+	ID          string
+	SurahNumber int
+	From        int
+	To          int
+	Length      int
 }
 
 /*
@@ -37,23 +52,23 @@ type VersesResponse struct {
 *
 */
 
-func FetchPosts() []ReflectPost {
+func FetchPosts() []Verse {
 
-	// All posts are saved here
-	var posts []ReflectPost
+	// All verses are saved here
+	var verses []Verse
 
 	// Checking if local copy exists
 	content, err := os.ReadFile("verses-data.json")
 
 	if err != nil { // Local copy doesn't exist, fetching from API
-		// Max number of fetched posts
-		MAX_POSTS := 40
+		// Max number of fetched verses
+		MAX_VERSES := 2000
 
 		// Counter for quranreflect api's pages pagenation
 		page := 1
 
-		// Looping tell all posts are fetched
-		for len(posts) < MAX_POSTS {
+		// Looping tell all verses are fetched
+		for len(verses) < MAX_VERSES {
 			// Timeout between each consumed request rate
 			timeout := 13
 
@@ -80,13 +95,28 @@ func FetchPosts() []ReflectPost {
 				println("  Status Code: ", resp.StatusCode)
 
 				if resp.StatusCode == 200 { // If Success
-
 					// Parsing JSON
 					res := utils.ParseJSONResponses[VersesResponse](resp.Body)
 
 					if len(res.Posts) != 0 {
-						posts = append(posts, res.Posts...) // Saving fetched posts
-						done = true                         // Mark page as done
+						for _, verse := range res.Posts {
+							for filterIndex, meta := range verse.Filters {
+								if len(verse.CitationTexts[filterIndex]) > 0 {
+									verse := Verse{
+										ID:          fmt.Sprintf("%v:%v", verse.ID, meta.ID),
+										SurahNumber: meta.SurahNumber,
+										From:        meta.From,
+										To:          meta.To,
+										Length:      len(strings.Fields(verse.CitationTexts[filterIndex][0].Text)),
+									}
+									// fmt.Printf("%+v\n", verse)
+
+									verses = append(verses, verse)
+								}
+
+							}
+						}
+						done = true // Mark page as done
 						page++
 					}
 				} else { // If Request failed
@@ -100,16 +130,16 @@ func FetchPosts() []ReflectPost {
 		}
 
 		// Saving a local copy of the data
-		jsoncontent, _ := json.MarshalIndent(posts, "", "    ")
+		jsoncontent, _ := json.MarshalIndent(verses, "", "    ")
 		err := os.WriteFile("verses-data.json", jsoncontent, 0644)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else { // Local Copy exists
-		json.Unmarshal(content, &posts)
+		json.Unmarshal(content, &verses)
 	}
 
 	// Return all posts
-	return posts
+	return verses
 }
