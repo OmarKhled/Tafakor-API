@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"database/sql"
-	"fmt"
+	// "fmt"
 	"log"
 
 	"tafakor.app/models"
@@ -10,17 +10,17 @@ import (
 
 func RecordPost(db *sql.DB, verseID string, published bool, state string, postURL string, publishmentid int, reelURL string) int {
 	// Inserted Post ID
-	var postId int
+	var postId int = 0
 
-	fmt.Println(verseID, published, state, postURL, publishmentid, reelURL)
-
-	// Insertion Query Prepare
+	// Directly execute the query using QueryRow (without Prepare)
 	postQuery := "INSERT INTO post(verse, published, state, posturl, publishmentid, reelurl) VALUES( $1, $2, $3, $4, $5, $6 ) RETURNING id"
-	postInsert, _ := db.Prepare(postQuery)
+	row := db.QueryRow(postQuery, verseID, published, state, postURL, publishmentid, reelURL)
 
-	// Insertion Query
-	postInsert.QueryRow(verseID, published, state, postURL, publishmentid, reelURL).Scan(&postId)
-	postInsert.Close()
+	// Scan the result into postId
+	err := row.Scan(&postId)
+	if err != nil {
+		log.Fatal("Error executing the query: ", err)
+	}
 
 	return postId
 }

@@ -15,13 +15,15 @@ func PublishRoutes(group fiber.Router, db *sql.DB) {
 		var body models.PublishmentParamaters
 		json.Unmarshal(c.Body(), &body)
 
-		fmt.Println(body.VerseID)
-
 		// Record Posting as Pending
 		postId := controllers.RecordPost(db, body.VerseID, false, "pending", body.PostURL, 0, body.ReelURL)
+		fmt.Println("Post id", postId)
 		controllers.RecordStock(db, body.StockID, postId, body.StockProvider, "pending")
+		fmt.Println("stock")
+
 		// Approval Reuest Email
 		controllers.RequestPostApproval(postId, body.PostURL, body.ReelURL)
+		fmt.Println("verify")
 
 		return c.JSON(postId)
 	})

@@ -36,7 +36,7 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 	// Email template
 	resp, _ := http.Get("https://tafkor.s3.eu-central-1.amazonaws.com/assets/approval.html")
 
-	fmt.Println(resp)
+	// fmt.Println(resp)
 
 	// Template parsing
 	buf := new(bytes.Buffer)
@@ -48,9 +48,12 @@ func RequestPostApproval(postId int, postURL string, reelURL string) {
 
 	// Template Filling
 	emailBody := r.Replace(string(template))
+	fmt.Println(emailBody)
 
 	// Email Send
 	err := utils.SendMail(SENDER_EMAIL, SENDER_PASS, EMAIL_HOST, SMTP_PORT, SUPERVISOR_EMAIL, "منشور جديد قيد الموافقة", emailBody)
+
+	fmt.Println(err)
 
 	if err != nil {
 		log.Fatal(err)

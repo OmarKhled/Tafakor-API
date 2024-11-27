@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"tafakor.app/models"
@@ -52,31 +51,55 @@ func GetStocks(db *sql.DB, verseId int) []StockFootage {
 }
 
 func RecordStock(db *sql.DB, id string, postID int, provider string, state string) string {
-	// Inserted Stock ID
+	// Inserted Post ID
 	var stockID string
 
-	// Insertion Query Prepare
+	// Directly execute the query using QueryRow (without Prepare)
 	stockQuery := "INSERT INTO stock_footage(stockid, post, provider, state) VALUES( $1, $2, $3, $4 ) RETURNING id"
-	stockInsert, err := db.Prepare(stockQuery)
+
+	var err error
+
+	if postID != 0 {
+		// Insertion Query
+		err = db.QueryRow(stockQuery, id, postID, provider, state).Scan(&stockID)
+	} else {
+		// Insertion Query
+		err = db.QueryRow(stockQuery, id, nil, provider, state).Scan(&stockID)
+	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if postID != 0 {
-		// Insertion Query
-		err = stockInsert.QueryRow(id, postID, provider, state).Scan(&stockID)
-	} else {
-		// Insertion Query
-		err = stockInsert.QueryRow(id, nil, provider, state).Scan(&stockID)
-	}
-
-	fmt.Println(err)
-	fmt.Println(stockID)
-	stockInsert.Close()
-
 	return stockID
 }
+
+// func RecordStock(db *sql.DB, id string, postID int, provider string, state string) string {
+// 	// Inserted Stock ID
+// 	var stockID string
+
+// 	// Insertion Query Prepare
+// 	stockQuery := "INSERT INTO stock_footage(stockid, post, provider, state) VALUES( $1, $2, $3, $4 ) RETURNING id"
+// 	stockInsert, err := db.Prepare(stockQuery)
+
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	if postID != 0 {
+// 		// Insertion Query
+// 		err = stockInsert.QueryRow(id, postID, provider, state).Scan(&stockID)
+// 	} else {
+// 		// Insertion Query
+// 		err = stockInsert.QueryRow(id, nil, provider, state).Scan(&stockID)
+// 	}
+
+// 	fmt.Println(err)
+// 	fmt.Println(stockID)
+// 	stockInsert.Close()
+
+// 	return stockID
+// }
 
 func GetStockByPostID(db *sql.DB, postID int) models.Stock {
 	var stock models.Stock

@@ -11,6 +11,8 @@ func SendMail(senderMail string, senderPass string, host string, port string, re
 	// Set up authentication information.
 	auth := smtp.PlainAuth("", senderMail, senderPass, host)
 
+	fmt.Println(auth)
+
 	// Array of recievers
 	recipientList := []string{recieverEmail}
 
@@ -22,6 +24,7 @@ func SendMail(senderMail string, senderPass string, host string, port string, re
 
 	msg := []byte(recieverHeader + subjectHeader + MIMEHeader + "\r\n" + content)
 	err := smtp.SendMail(host+":"+port, auth, senderMail, recipientList, msg)
+	fmt.Println("sendemail")
 
 	return err
 }
