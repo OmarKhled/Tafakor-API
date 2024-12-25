@@ -140,8 +140,16 @@ func _igReelPublish(uploadId string) string {
 	var USER_ACCESS_TOKEN string = os.Getenv("USER_ACCESS_TOKEN")
 
 	reelPublishEndpoint := fmt.Sprintf("https://graph.facebook.com/v18.0/%v/media_publish?creation_id=%v&access_token=%v", TAFAKOR_ID_INSTAGRAM, uploadId, USER_ACCESS_TOKEN)
+
+	fmt.Println(reelPublishEndpoint)
 	nullBody := strings.NewReader("!")
 	publishmentRes, _ := http.Post(reelPublishEndpoint, "", nullBody)
+	fmt.Println(publishmentRes.StatusCode)
+
+	// Printing Response
+	// fmt.Println(publishmentRes.Body)
+
+	fmt.Println(publishmentRes.Body.Read([]byte{}))
 	if publishmentRes.StatusCode != 200 {
 		return "NOT_YET"
 	} else {
