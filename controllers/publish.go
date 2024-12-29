@@ -49,7 +49,7 @@ type reelSessionInitResponse struct {
 }
 
 // var HASH_TAGS = "أَلا بِذِكرِ اللَّهِ تَطمَئِنُّ القُلوبُ 🤍🤍 \n #القران_الكريم #القرآن #قرآن #quran #تفكر #remembrance"
-var HASH_TAGS = " "
+var HASH_TAGS = "ألا بذكر الله تطمئن القلوب 🙏 #القرآن #قرآن "
 
 /*
 @desc Publishes Facaebook Posts
